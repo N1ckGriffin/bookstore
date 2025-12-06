@@ -221,7 +221,7 @@ def create_app():
             author=author,
             buy_price=float(buy_price),
             rent_price=float(rent_price),
-            available_copies=1,  # Default to 1 available copy
+            available_copies=1,
         )
         db.session.add(b)
         db.session.commit()

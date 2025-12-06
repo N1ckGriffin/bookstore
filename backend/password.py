@@ -2,8 +2,8 @@
 from passlib.context import CryptContext
 
 try:
-    import argon2  # noqa: F401 - presence is what we need
-except Exception as exc:  # pragma: no cover - environment check
+    import argon2
+except Exception as exc:
     raise RuntimeError(
         "Argon2 backend not available. Install argon2-cffi and passlib[argon2]: `python -m pip install argon2-cffi passlib[argon2]`"
     ) from exc

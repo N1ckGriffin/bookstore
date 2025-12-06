@@ -88,7 +88,7 @@ class OrdersScreen(ttk.Frame):
         if not sel:
             messagebox.showinfo("No selection", "Please select an order to update")
             return
-        order_id = sel[0]  # iid is id
+        order_id = sel[0]
         new_status = self.status_var.get()
 
         def worker():
@@ -231,7 +231,7 @@ class BookMaintenanceScreen(ttk.Frame):
                 self.buy_entry.delete(0, 'end')
                 self.rent_entry.delete(0, 'end')
                 self.available_entry.delete(0, 'end')
-                self.book_var.set('')  # clear selection
+                self.book_var.set('')
 
                 if mode == 'create':
                     try:
