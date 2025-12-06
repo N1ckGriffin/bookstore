@@ -138,6 +138,13 @@ def create_app():
             total += price
 
         order.total = total
+
+        # Send email before committing to ensure it's always sent
+        body = f"Your Order\nTotal: {order.total}\nItems:\n"
+        for oi in order.items:
+            body += f" - {oi.book.title}: {oi.price} ({'buy' if oi.is_buy else 'rent'})\n"
+        send_order_email(user.email, f"Your Order", body)
+
         db.session.commit()
 
         order_data = {
@@ -146,14 +153,6 @@ def create_app():
             "total": order.total,
             "payment_status": order.payment_status,
         }
-
-        try:
-            body = f"Your Order\nTotal: {order.total}\nItems:\n"
-            for oi in order.items:
-                body += f" - {oi.book.title}: {oi.price} ({'buy' if oi.is_buy else 'rent'})\n"
-            send_order_email(user.email, f"Your Order", body)
-        except Exception:
-            pass
 
         return jsonify(order_data), 201
 
