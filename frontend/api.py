@@ -106,7 +106,7 @@ def api_list_orders(token: Optional[str]) -> Dict[str, Any]:
         return {"success": False, "msg": str(e)}
 
 
-def api_update_payment_status(order_id: str, new_status: str, token: Optional[str]) -> Dict[str, Any]:
+def api_update_payment_status(order_id: int, new_status: str, token: Optional[str]) -> Dict[str, Any]:
     url = f"{BASE_URL}/manager/orders/{order_id}/payment"
     headers = _auth_header(token)
     try:

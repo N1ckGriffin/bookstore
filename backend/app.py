@@ -129,8 +129,10 @@ def create_app():
             if not book:
                 db.session.rollback()
                 return jsonify({"msg": f"book {book_id} not found"}), 404
-            if typ == "rent":
-                book.available_copies -= qty
+            if book.available_copies < qty:
+                db.session.rollback()
+                return jsonify({"msg": f"not enough copies for book {book_id}"}), 400
+            book.available_copies -= qty
             price = book.buy_price if typ == "buy" else book.rent_price
             oi = OrderItem(order=order, book=book, quantity=qty, is_buy=(typ == "buy"), price=price)
             db.session.add(oi)
@@ -140,7 +142,6 @@ def create_app():
         db.session.commit()
 
         order_data = {
-            "order_id": order.order_id,
             "customer": user.username,
             "items": [{"book": oi.book.title, "type": ("buy" if oi.is_buy else "rent"), "quantity": oi.quantity, "price": oi.price} for oi in order.items],
             "total": order.total,
@@ -148,10 +149,10 @@ def create_app():
         }
 
         try:
-            body = f"Order {order.order_id}\nTotal: {order.total}\nItems:\n"
+            body = f"Your Order\nTotal: {order.total}\nItems:\n"
             for oi in order.items:
                 body += f" - {oi.book.title}: {oi.quantity} x {oi.price} ({'buy' if oi.is_buy else 'rent'})\n"
-            send_order_email(user.email, f"Your Order {order.order_id}", body)
+            send_order_email(user.email, f"Your Order", body)
         except Exception:
             pass
 
@@ -164,7 +165,7 @@ def create_app():
         out = []
         for o in orders:
             out.append({
-                "order_id": o.order_id,
+                "id": o.id,
                 "customer": o.user.username,
                 "items": [{"book": it.book.title, "type": ("buy" if it.is_buy else "rent"), "quantity": it.quantity} for it in o.items],
                 "total": o.total,
@@ -191,10 +192,10 @@ def create_app():
         ]
         return jsonify(out)
 
-    @app.route("/manager/orders/<order_id>/payment", methods=["PUT"])
+    @app.route("/manager/orders/<int:id>/payment", methods=["PUT"])
     @role_required("manager")
-    def update_payment(order_id):
-        o = Order.query.filter_by(order_id=order_id).first()
+    def update_payment(id):
+        o = Order.query.get(id)
         if not o:
             return jsonify({"msg": "order not found"}), 404
         data = request.get_json() or {}

@@ -75,7 +75,7 @@ class OrdersScreen(ttk.Frame):
                 for o in res.get("orders", []):
                     items = o.get("items", [])
                     items_str = ", ".join([f"{it.get('book')}({it.get('type')})" for it in items])
-                    self.tree.insert("", "end", iid=o.get("order_id"), values=(o.get("customer"), items_str, f"${o.get('total')}", o.get("payment_status")))
+                    self.tree.insert("", "end", iid=o.get("id"), values=(o.get("customer"), items_str, f"${o.get('total')}", o.get("payment_status")))
 
             self.controller.after(0, ui_update)
 
@@ -88,7 +88,7 @@ class OrdersScreen(ttk.Frame):
         if not sel:
             messagebox.showinfo("No selection", "Please select an order to update")
             return
-        order_id = sel[0]  # iid is order_id
+        order_id = sel[0]  # iid is id
         new_status = self.status_var.get()
 
         def worker():
@@ -101,7 +101,7 @@ class OrdersScreen(ttk.Frame):
                 if not res.get("success"):
                     messagebox.showerror("Update failed", res.get("msg", "Could not update status"))
                     return
-                messagebox.showinfo("Updated", f"Order {order_id} status set to {new_status}")
+                messagebox.showinfo("Updated", f"Order status updated to {new_status}")
                 self.load_orders()
 
             self.controller.after(0, ui_update)
