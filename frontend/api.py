@@ -73,7 +73,7 @@ def api_search_books(keyword: Optional[str] = None, token: Optional[str] = None)
 
 
 def api_place_order(items: List[Dict[str, Any]], token: Optional[str]) -> Dict[str, Any]:
-    """POST /orders — items is list of {book_id, quantity, type}
+    """POST /orders — items is list of {book_id, type}
 
     Returns {success: bool, order?: {...}, msg?: str}
     """

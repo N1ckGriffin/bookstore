@@ -135,7 +135,9 @@ class OrderFinalizationScreen(ttk.Frame):
         items = []
         for it in self.controller.order_draft:
             b = it["book"]
-            items.append({"book_id": int(b.get("id")), "quantity": int(it.get("quantity", 1)), "type": it.get("type")})
+            qty = int(it.get("quantity", 1))
+            for _ in range(qty):
+                items.append({"book_id": int(b.get("id")), "type": it.get("type")})
 
         token = getattr(self.controller, "jwt_token", None)
 

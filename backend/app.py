@@ -120,7 +120,6 @@ def create_app():
         total = 0.0
         for it in items:
             book_id = it.get("book_id")
-            qty = int(it.get("quantity", 1))
             typ = it.get("type")
             if typ not in ("buy", "rent"):
                 db.session.rollback()
@@ -129,21 +128,21 @@ def create_app():
             if not book:
                 db.session.rollback()
                 return jsonify({"msg": f"book {book_id} not found"}), 404
-            if book.available_copies < qty:
+            if book.available_copies < 1:
                 db.session.rollback()
                 return jsonify({"msg": f"not enough copies for book {book_id}"}), 400
-            book.available_copies -= qty
+            book.available_copies -= 1
             price = book.buy_price if typ == "buy" else book.rent_price
-            oi = OrderItem(order=order, book=book, quantity=qty, is_buy=(typ == "buy"), price=price)
+            oi = OrderItem(order=order, book=book, is_buy=(typ == "buy"), price=price)
             db.session.add(oi)
-            total += price * qty
+            total += price
 
         order.total = total
         db.session.commit()
 
         order_data = {
             "customer": user.username,
-            "items": [{"book": oi.book.title, "type": ("buy" if oi.is_buy else "rent"), "quantity": oi.quantity, "price": oi.price} for oi in order.items],
+            "items": [{"book": oi.book.title, "type": ("buy" if oi.is_buy else "rent"), "price": oi.price} for oi in order.items],
             "total": order.total,
             "payment_status": order.payment_status,
         }
@@ -151,7 +150,7 @@ def create_app():
         try:
             body = f"Your Order\nTotal: {order.total}\nItems:\n"
             for oi in order.items:
-                body += f" - {oi.book.title}: {oi.quantity} x {oi.price} ({'buy' if oi.is_buy else 'rent'})\n"
+                body += f" - {oi.book.title}: {oi.price} ({'buy' if oi.is_buy else 'rent'})\n"
             send_order_email(user.email, f"Your Order", body)
         except Exception:
             pass
@@ -167,7 +166,7 @@ def create_app():
             out.append({
                 "id": o.id,
                 "customer": o.user.username,
-                "items": [{"book": it.book.title, "type": ("buy" if it.is_buy else "rent"), "quantity": it.quantity} for it in o.items],
+                "items": [{"book": it.book.title, "type": ("buy" if it.is_buy else "rent")} for it in o.items],
                 "total": o.total,
                 "payment_status": o.payment_status,
             })
