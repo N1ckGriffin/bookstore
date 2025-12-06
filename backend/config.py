@@ -1,9 +1,4 @@
-"""Configuration helpers reading from environment variables.
 
-This module will attempt to load a top-level `.env` file automatically using
-python-dotenv if present. That lets you run `python -m backend.app` without
-manually loading environment variables in PowerShell.
-"""
 import os
 from pathlib import Path
 

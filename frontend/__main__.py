@@ -1,9 +1,4 @@
-"""Frontend package entrypoint.
 
-Run with: python -m frontend
-This launches the Tkinter GUI by importing the frontend controller and starting
-the mainloop.
-"""
 from frontend.controller import BookstoreApp
 
 

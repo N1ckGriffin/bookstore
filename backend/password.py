@@ -1,10 +1,4 @@
-"""Password hashing helpers with a resilient CryptContext.
 
-This module configures passlib to prefer bcrypt but fall back to
-pbkdf2_sha256 if bcrypt isn't available. Use the helpers here to hash and
-verify passwords so the rest of the app doesn't need to worry about backend
-availability.
-"""
 from passlib.context import CryptContext
 
 try:

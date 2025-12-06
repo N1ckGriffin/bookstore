@@ -1,9 +1,4 @@
-"""HTTP client helpers used by the GUI to call the backend.
 
-These use the `requests` library. Network calls are synchronous here; the GUI
-frames are responsible for running them on background threads and updating the
-UI on the main thread.
-"""
 import os
 from typing import Optional, Any, Dict, List
 
